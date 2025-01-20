@@ -1,0 +1,51 @@
+image:
+  tag: 8.0.32
+
+architecture: replication
+
+auth:
+  rootPassword: root@mysql
+  createDatabase: true
+  database: "csv"
+  username: "admin"
+  password: "csv@password"
+
+replication:
+  enabled: true
+  user: replicator          # Replication user
+  password: MySQLreplicator  # Replication password
+  mode: asynchronous
+
+service:
+  type: ClusterIP
+  port: 3306 
+
+primary:
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "3306"
+  labels:
+    app: mysql
+    role: primary
+  persistence:
+    enabled: true
+    existingClaim: "mysql-pvc"
+
+volumePermissions:
+  enabled: true
+
+initdbScripts:
+  init_db.sql: |
+    CREATE DATABASE csv;
+
+secondary:
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "3306"
+  labels:
+    app: mysql
+    role: secondary
+  replicaCount: 1
+  persistence:
+    enabled: true
+    existingClaim: "mysql-pvc-slave"

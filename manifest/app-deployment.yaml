@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: perx
+  labels:
+    app: perx
+    type: backend
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 50%
+      maxSurge: 50%
+  selector:
+    matchLabels:
+      app: perx
+  template:
+    metadata:
+      labels:
+        app: perx
+    spec:
+      containers:
+      - name: perx-container
+        image: 207990345110.dkr.ecr.ap-south-1.amazonaws.com/perx:latest
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1024m"
+        env:
+        - name: DATABASE_NAME
+          valueFrom:
+            secretKeyRef:
+              name: mysqldb-secret
+              key: database_name
+        - name: DATABASE_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysqldb-secret
+              key: database_user
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysqldb-secret
+              key: database_password
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 8
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 5
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                - ap-south-1a
+                - ap-south-1b
