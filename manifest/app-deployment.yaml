@@ -34,17 +34,21 @@ spec:
             memory: "512Mi"
             cpu: "1024m"
         env:
-        - name: DATABASE_NAME
+        - name: MYSQL_HOST
+          value: "mysql-primary"
+        - name: MYSQL_PORT
+          value: "3306"
+        - name: MYSQL_DATABASE_NAME
           valueFrom:
             secretKeyRef:
               name: mysqldb-secret
               key: database_name
-        - name: DATABASE_USER
+        - name: MYSQL_USER
           valueFrom:
             secretKeyRef:
               name: mysqldb-secret
               key: database_user
-        - name: DATABASE_PASSWORD
+        - name: MYSQL_PASSWORD
           valueFrom:
             secretKeyRef:
               name: mysqldb-secret

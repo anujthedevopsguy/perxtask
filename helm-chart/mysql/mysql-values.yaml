@@ -1,5 +1,5 @@
 image:
-  tag: 8.0.32
+  tag: 8.4.3
 
 architecture: replication
 
@@ -30,13 +30,21 @@ primary:
   persistence:
     enabled: true
     existingClaim: "mysql-pvc"
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                  - ap-south-1a
 
 volumePermissions:
   enabled: true
 
 initdbScripts:
-  init_db.sql: |
-    CREATE DATABASE csv;
+  noop.sql: ""
 
 secondary:
   annotations:
@@ -46,6 +54,15 @@ secondary:
     app: mysql
     role: secondary
   replicaCount: 1
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                  - ap-south-1b
   persistence:
     enabled: true
     existingClaim: "mysql-pvc-slave"
