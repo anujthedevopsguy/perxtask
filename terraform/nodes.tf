@@ -45,11 +45,11 @@ resource "aws_eks_node_group" "general" {
   ]
 
   capacity_type  = "ON_DEMAND"
-  instance_types = ["t2.small"]
+  instance_types = ["t3.xlarge"]
 
   scaling_config {
     desired_size = 2
-    max_size     = 10
+    max_size     = 3
     min_size     = 2
   }
 
@@ -59,7 +59,6 @@ resource "aws_eks_node_group" "general" {
 
   labels = {
     role = "general"
-    #"topology.kubernetes.io/zone" = "${element(local.zones, count.index)}"
   }
 
   depends_on = [

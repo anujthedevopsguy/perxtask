@@ -1,5 +1,5 @@
 image:
-  tag: 8.4.3
+  tag: 8.4.4
 
 architecture: replication
 
@@ -21,6 +21,13 @@ service:
   port: 3306 
 
 primary:
+  startupProbe:
+    enabled: true
+    initialDelaySeconds: 90
+    periodSeconds: 10
+    timeoutSeconds: 2
+    failureThreshold: 15
+    successThreshold: 1
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "3306"
@@ -29,7 +36,7 @@ primary:
     role: primary
   persistence:
     enabled: true
-    existingClaim: "mysql-pvc"
+    existingClaim: "mysql-master"
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -47,6 +54,13 @@ initdbScripts:
   noop.sql: ""
 
 secondary:
+  startupProbe:
+    enabled: true
+    initialDelaySeconds: 90
+    periodSeconds: 10
+    timeoutSeconds: 2
+    failureThreshold: 15
+    successThreshold: 1
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "3306"
@@ -65,4 +79,4 @@ secondary:
                   - ap-south-1b
   persistence:
     enabled: true
-    existingClaim: "mysql-pvc-slave"
+    existingClaim: "mysql-slave"
