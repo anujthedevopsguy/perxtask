@@ -7,7 +7,8 @@ metadata:
     type: backend
   annotations:
     prometheus.io/scrape: "true"
-    prometheus.io/port: "8080"
+    prometheus.io/port: "8000"
+    prometheus.io/path: "/metrics"
 spec:
   strategy:
     type: RollingUpdate
@@ -24,16 +25,16 @@ spec:
     spec:
       containers:
       - name: perx-container
-        image: 207990345110.dkr.ecr.ap-south-1.amazonaws.com/perx:latest
+        image: 207990345110.dkr.ecr.ap-south-1.amazonaws.com/todo:latest
         resources:
           requests:
             memory: "256Mi"
-            cpu: "500m"
+            cpu: "250m"
           limits:
             memory: "512Mi"
-            cpu: "1024m"
+            cpu: "500m"
         env:
-        - name: MYSQL_HOST
+        - name: MYSQL_HOSTNAME
           value: "mysql-primary"
         - name: MYSQL_PORT
           value: "3306"
@@ -54,14 +55,14 @@ spec:
               key: database_password
         livenessProbe:
           httpGet:
-            path: /
-            port: 8080
+            path: /health
+            port: 8000
           initialDelaySeconds: 8
           periodSeconds: 5
         readinessProbe:
           httpGet:
-            path: /
-            port: 8080
+            path: /health
+            port: 8000
           initialDelaySeconds: 3
           periodSeconds: 5
       affinity:
