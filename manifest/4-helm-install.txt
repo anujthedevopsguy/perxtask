@@ -1,0 +1,2 @@
+cd manifest/
+helm install mysql -f ../terraform/values/mysql-values.yaml bitnami/mysql

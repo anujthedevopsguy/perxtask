@@ -10,6 +10,7 @@ metadata:
     prometheus.io/port: "8000"
     prometheus.io/path: "/metrics"
 spec:
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -24,8 +25,8 @@ spec:
         app: perx
     spec:
       containers:
-      - name: perx-container
-        image: 207990345110.dkr.ecr.ap-south-1.amazonaws.com/todo:latest
+      - name: perx
+        image: 207990345110.dkr.ecr.ap-south-1.amazonaws.com/todo:ui
         resources:
           requests:
             memory: "256Mi"
@@ -38,21 +39,12 @@ spec:
           value: "mysql-primary"
         - name: MYSQL_PORT
           value: "3306"
-        - name: MYSQL_DATABASE_NAME
-          valueFrom:
-            secretKeyRef:
-              name: mysqldb-secret
-              key: database_name
+        - name: MYSQL_DATABASE
+          value: "todo"
         - name: MYSQL_USER
-          valueFrom:
-            secretKeyRef:
-              name: mysqldb-secret
-              key: database_user
+          value: "root"
         - name: MYSQL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mysqldb-secret
-              key: database_password
+          value: "root@mysql"
         livenessProbe:
           httpGet:
             path: /health

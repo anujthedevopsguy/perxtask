@@ -37,16 +37,8 @@ primary:
     role: primary
   persistence:
     enabled: true
-    existingClaim: "mysql-master"
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: topology.kubernetes.io/zone
-                operator: In
-                values:
-                  - ap-south-1a
+    storageClass: standard
+    size: 8Gi
 
 volumePermissions:
   enabled: true
@@ -75,15 +67,7 @@ secondary:
     app: mysql
     role: secondary
   replicaCount: 1
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: topology.kubernetes.io/zone
-                operator: In
-                values:
-                  - ap-south-1b
   persistence:
     enabled: true
-    existingClaim: "mysql-slave"
+    size: 8Gi
+    storageClass: standard
